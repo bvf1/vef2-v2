@@ -1,18 +1,35 @@
 import dotenv from 'dotenv';
+import pg from 'pg';
 import express from 'express';
+import { body, validationResult } from 'express-validator';
+
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { isInvalid } from './lib/template-helpers.js';
+// import { isInvalid } from './lib/template-helpers';
 import { indexRouter } from './routes/index-routes.js';
 
 dotenv.config();
-
-const { PORT: port = 3000 } = process.env;
-
 const app = express();
 
-// Sér um að req.body innihaldi gögn úr formi
-app.use(express.urlencoded({ extended: true }));
+  // Sér um að req.body innihaldi gögn úr formi
+  app.use(express.urlencoded({ extended: true }));
+
+const {
+  PORT: port = 3000,
+  DATABASE_URL: connectionString,
+  NODE_ENV: nodeEnv = 'developement'
+} = process.env;
+
+// Notum SSL tengingu við gagnagrunn ef við erum *ekki* í development
+// mode, á heroku, ekki á local vél
+const ssl = nodeEnv === 'production' ? { rejectUnauthorized: false } : false;
+
+const pool = new pg.Pool({ connectionString, ssl });
+
+pool.on('error', (err) => {
+  console.error('postgres error, exiting...', err);
+  process.exit(-1);
+});
 
 const path = dirname(fileURLToPath(import.meta.url));
 
@@ -20,26 +37,54 @@ app.use(express.static(join(path, '../public')));
 app.set('views', join(path, '../views'));
 app.set('view engine', 'ejs');
 
-app.locals = {
-  // TODO hjálparföll fyrir template
+/**
+ * Hjálparfall til að athuga hvort reitur sé gildur eða ekki.
+ *
+ * @param {string} field Heiti á reit í formi
+ * @param {array} errors Fylki af villum frá express-validator pakkanum
+ * @returns {boolean} `true` ef `field` er í `errors`, `false` annars
+ */
+function isInvalid(field, errors = []) {
+  // Boolean skilar `true` ef gildi er truthy (eitthvað fannst)
+  // eða `false` ef gildi er falsy (ekkert fannst: null)
+  return Boolean(errors.find((i) => i && i.param === field));
+}
+
+app.locals.isInvalid = isInvalid;
+
+app.get('/', async (req, res) => {
+  res.render('event', {
+    title: 'Atburðurinn minn',
+    errors: [],
+    data: {},
+  });
+});
+
+
+
+const validation = [
+  body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt')
+]
+
+const validationResults = (req, res, next) => {
+  const { name = '', description = ''} = req.body;
+
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    return res.render('event', {
+      title: 'Atburðurinn minn',
+      errors: result.errors,
+      data: { name, description },
+    });
+  }
+
+  return next();
 };
 
-app.use('/', indexRouter);
-// TODO admin routes
 
-/** Middleware sem sér um 404 villur. */
-app.use((req, res) => {
-  const title = 'Síða fannst ekki';
-  res.status(404).render('error', { title });
-});
+app.post('/post',validation, validationResults, postEvent);
 
-/** Middleware sem sér um villumeðhöndlun. */
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.error(err);
-  const title = 'Villa kom upp';
-  res.status(500).render('error', { title });
-});
 
 app.listen(port, () => {
   console.info(`Server running at http://localhost:${port}/`);

@@ -1,10 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
-import {
-  createSchema,
-  dropSchema,
-  end,
-} from '../lib/db';
+import { createSchema, dropSchema, end } from '../lib/db';
 
 /**
  * Hér er test gagnagrunnur búinn til og hent áður en test eru keyrð.

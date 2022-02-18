@@ -27,7 +27,7 @@ describe('registration', () => {
 
     const registrationValidationMiddleware = []; // TODO Sækja á réttan stað
 
-    await applyAllMiddlewares(req, );
+    await applyAllMiddlewares(req);
 
     const validation = validationResult(req);
 

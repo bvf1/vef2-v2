@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
 import pg from 'pg';
+import { makeSlug } from './utils';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -62,3 +63,34 @@ export async function end() {
 }
 
 /* TODO útfæra aðgeðir á móti gagnagrunni */
+
+export async function createEvent({ name, description }) {
+  const q = `
+    INSERT INTO
+      events(name, slug, description)
+    VALUES
+      ($1, $2, $3)
+    RETURNING *`;
+  const values = [name, makeSlug(name), description];
+
+  const result = await query(q, values);
+
+  return result !== null;
+}
+
+
+export const postEvent = async (req, res) => {
+  const { name, description } = req.body;
+
+  const created = await createEvent({ name, description })
+
+  if (created) {
+    return res.send('<p>Atburður er skráður</p>');
+  }
+
+  return res.render('event', {
+    title: 'Atburðurinn minn',
+    errors: [{param: '', msg: 'Gat ekki búið til event'}],
+    data: { name, description },
+  });
+};
