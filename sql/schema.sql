@@ -7,9 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
-
-INSERT INTO users (username, password) VALUES ('admin',
-'$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFJxLbrzIv/4Nteisii');
+INSERT INTO users (username, password) VALUES ('admin', '$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii');
 
 CREATE TABLE IF NOT EXISTS public.events (
   id serial primary key,
@@ -24,6 +22,7 @@ CREATE TABLE IF NOT EXISTS public.registrations (
   id serial primary key,
   name varchar(64) not null,
   comment text,
-  eventID int FOREIGN KEY REFERENCES events(id),
-  created timestamp with time zone not null default current_timestamp
+  eventID int REFERENCES events(id),
+  created timestamp with time zone not null default current_timestamp,
+  unique (name, eventID)
 );

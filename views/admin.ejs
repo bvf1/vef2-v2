@@ -1,0 +1,49 @@
+<%- include('header') -%>
+<h1>Viðburða umsjón</h1>
+<h2>Viðburðir á næstunni</h2>
+<% if (events.length === 0) { %>
+  <p>Engin event!</p>
+<% } else { %>
+  <ul>
+    <% events.forEach((event) => { %>
+      <li>
+        <a href="/<%= event.slug %>"><%= event.name %></a>
+        <p><%= event.description %></p>
+        <a href="/admin/<%= event.slug %>">Uppfæra viðburð</a>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<div>
+  <h2>Nýr viðburður</h2>
+  <form method="post" action="/post" enctype="application/x-www-form-urlencoded" class="form form--separated">
+
+    <div class="field<%= locals.isInvalid('name', errors) ?  ' field--invalid' : '' %>">
+      <label for="name">Nafn*</label>
+      <input type="text" name="name" id="name" value="<%= data.name %>" class="">
+    </div>
+
+    <div class="field field--textarea<%= locals.isInvalid('description', errors) ?  ' field--invalid' : '' %>">
+      <label for="description">Lýsing:</label>
+      <textarea name="description" id="description"><%= data.description %></textarea>
+    </div>
+
+    <% if (errors.length > 0) { %>
+    <h2 class="errors_title">Villur við skráningu:</h2>
+    <ul class="errors">
+      <% errors.forEach((error) => { %>
+      <li class="error"><label for="<%= error.param %>"><%= error.msg %></label></li>
+
+      <% }); %>
+    </ul>
+    <% } %>
+    <button class="button button--large button--margin">Búa til Atburð</button>
+  </form>
+</div>
+<div>
+  <p>Innskráður sem <span>admin</span></p>
+  <a href="/">Útskrá</a>
+</div>
+
+<%- include('footer') -%>

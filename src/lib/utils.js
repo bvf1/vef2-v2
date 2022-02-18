@@ -1,3 +1,6 @@
+import latinize from 'latinize';
+
 export function makeSlug(name) {
-  return name;
+  name.replace(' ', '-');
+  return latinize(name);
 }

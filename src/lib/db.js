@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 import pg from 'pg';
-import { makeSlug } from './utils';
+import { makeSlug } from './utils.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -78,19 +78,84 @@ export async function createEvent({ name, description }) {
   return result !== null;
 }
 
+export async function updateEvent({ name, description, slug }) {
+  const q = `
+    UPDATE events
+    SET name = $1,
+      slug = $2
+      description = $3,
+      updated = current_timestamp
+    WHERE slug = $4`;
 
-export const postEvent = async (req, res) => {
-  const { name, description } = req.body;
+  const values = [name, makeSlug(name), description, slug];
 
-  const created = await createEvent({ name, description })
+  const result = await query(q, values);
 
-  if (created) {
-    return res.send('<p>Atburður er skráður</p>');
+  return result !== null;
+}
+
+export async function createRegistration({ name, comment, event }) {
+  const q = `
+    INSERT INTO
+      registrations(name, comment, eventID)
+    VALUES
+      ($1, $2, $3)
+    RETURNING *`;
+  const values = [name, comment, event];
+
+  const result = await query(q, values);
+
+  return result !== null;
+}
+
+export async function listEvents() {
+  const q = 'SELECT * FROM events';
+
+  const result = await query(q);
+
+  if (result) {
+    return result.rows;
   }
 
-  return res.render('event', {
-    title: 'Atburðurinn minn',
-    errors: [{param: '', msg: 'Gat ekki búið til event'}],
-    data: { name, description },
-  });
-};
+  return [];
+}
+
+export async function listRegistrations() {
+  const q = 'SELECT * FROM registrations';
+
+  const result = await query(q);
+
+  if (result) {
+    return result.rows;
+  }
+
+  return [];
+}
+
+export async function chosenEvent(slug) {
+  if (slug==="favicon.ico") return [];
+  console.log('jfowe', slug);
+  const q = `SELECT * FROM events WHERE slug=$1`;
+  const values = [slug];
+  console.log('jfowe', slug);
+
+  const result = await query(q, values);
+  console.log('jfowe', slug);
+
+  if (result) {
+    return result.rows[0];
+  }
+  return [];
+}
+
+export async function getEventID(slug) {
+  const q = `SELECT id FROM events WHERE slug=$1`;
+  const values = [slug];
+
+  const result = await query(q, values);
+
+  if (result) {
+    return result.rows[0];
+  }
+  return [];
+}
