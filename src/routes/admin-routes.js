@@ -4,24 +4,22 @@ import { listEvents, chosenEvent, updateEvent } from '../lib/db.js';
 
 export const router = express.Router();
 
-export function ensureLoggedIn(req, res, next) {
+function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
+    console.log('next');
     return next();
   }
-
-  return res.redirect('/login');
+  console.log('redirect  in /admin');
+  return res.redirect('/admin/login');
 }
 
-router.get('/', async (req, res) => {
+router.get('/', ensureLoggedIn, async (req, res) => {
   // ensureLoggedIn
   const events = await listEvents();
   res.render('admin', { title: 'admin svæði', events, errors: [], data: {} });
 });
 
-
-
 router.get('/login', (req, res) => {
-
   if (req.isAuthenticated()) {
     return res.redirect('/admin');
   }
@@ -52,37 +50,34 @@ router.post(
     failureRedirect: '/admin/login',
   }),
   (req, res) => {
-      console.log(req.originalUrl);
-
     res.redirect('/admin/login');
   }
 );
-  /*
 
 router.get('/:slug', async (req, res) => {
-  console.log(req.originalUrl);
-
-  const { name, description, slug } = await chosenEvent(req.params.slug);
-  console.log(req.originalUrl);
-
+  const { name, description } = await chosenEvent(req.params.slug);
   res.render('admin-event', {
     title: 'admin svæði',
     errors: [],
-    data: { name, description, slug },
+    data: { name, description },
   });
 });
 
-router.post('/:slug/post', async (req, res) => {
+router.post('/:slug', async (req, res) => {
   const { name, description } = req.body;
-  const event = await updateEvent({ name, description });
+  const slug = req.params.slug;
+  console.log(object);
+  console.log(name); /*
+ // const event = await updateEvent({ name, description, slug });
   if (event) {
-    return res.send('<p>Atburði er breytt</p>');
+    return res.redirect('/');
   }
 
   return res.render('/admin-event', {
     title: 'Atburðurinn minn',
     errors: [{ param: '', msg: 'Gat ekki búið til event' }],
-    data: { name, description },
-  });
+    data: { name, description},
+  });*/
 });
- */
+
+//console.log(req.originalUrl);

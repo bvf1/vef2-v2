@@ -1,15 +1,16 @@
 <div>
-  <h2>Nýr viðburður</h2>
-  <form method="post" action="/admin" enctype="application/x-www-form-urlencoded" class="form form--separated">
+  <h2>Skráðu þig</h2>
+
+  <form method="post" action="/<%= event.slug %>" enctype="application/x-www-form-urlencoded" class="form form--separated">
 
     <div class="field<%= locals.isInvalid('name', errors) ?  ' field--invalid' : '' %>">
       <label for="name">Nafn*</label>
       <input type="text" name="name" id="name" value="<%= data.name %>" class="">
     </div>
 
-    <div class="field field--textarea<%= locals.isInvalid('description', errors) ?  ' field--invalid' : '' %>">
-      <label for="description">Lýsing:</label>
-      <textarea name="description" id="description"><%= data.description %></textarea>
+    <div class="field field--textarea<%= locals.isInvalid('comment', errors) ?  ' field--invalid' : '' %>">
+      <label for="comment">Lýsing:</label>
+      <textarea name="comment" id="comment"><%= data.comment %></textarea>
     </div>
 
     <% if (errors.length > 0) { %>
@@ -21,7 +22,7 @@
       <% }); %>
     </ul>
     <% } %>
-    <button class="button button--large button--margin">Búa til Atburð</button>
+
+    <button class="button button--large button--margin">Skrá mig</button>
   </form>
 </div>
-

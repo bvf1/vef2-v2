@@ -1,21 +1,23 @@
 import dotenv from 'dotenv';
-import pg from 'pg';
 import express from 'express';
-import passport from 'passport';
 import session from 'express-session';
-import { Strategy } from 'passport-local';
-
 import { body, validationResult } from 'express-validator';
-
+import passport from 'passport';
+import { Strategy } from 'passport-local';
 import { dirname, join } from 'path';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
 // import { isInvalid } from './lib/template-helpers';
 import xss from 'xss';
-import { indexRouter } from './routes/index-routes.js';
-
-import { comparePasswords, findByUsername, findById } from './lib/users.js';
+import {
+  createEvent,
+  createRegistration,
+  getEventID,
+  listEvents,
+} from './lib/db.js';
+import { comparePasswords, findById, findByUsername } from './lib/users.js';
 import { router as adminRouter } from './routes/admin-routes.js';
-import { createEvent, createRegistration, listEvents } from './lib/db.js';
+import { indexRouter } from './routes/index-routes.js';
 
 dotenv.config();
 const app = express();
@@ -103,65 +105,8 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use('/', indexRouter);
 app.use('/admin', adminRouter);
-
-
-//app.use('/', indexRouter);
-
-/*
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-
-  return res.redirect('/login');
-}
-
-app.get('/login', (req, res) => {
-
-  if (req.isAuthenticated()) {
-    return res.redirect('/');
-  }
-
-  let message = '';
-
-  // Athugum hvort einhver skilaboð séu til í session, ef svo er
-  //  birtum þau og hreinsum skilaboð
-  if (req.session.messages && req.session.messages.length > 0) {
-    message = req.session.messages.join(', ');
-    req.session.messages = [];
-  }
-
-  return res.send(`
-  <form method="post" action="/login">
-  <label>Notendanafn: <input type="text" name="username"></label>
-  <label>Lykilorð: <input type="password" name="password"></label>
-  <button>Innskrá</button>
-  </form>
-  <p>${message}</p>
-  `);
-});
-
-
-
-app.post(
-  '/login',
-  passport.authenticate('local', {
-    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/login',
-  }),
-  (req, res) => {
-
-    res.redirect('/admin');
-  }
-);
-
-
-app.get('/admin', ensureLoggedIn, async (req, res) => {
-  // ensureLoggedIn
-  res.send(`<p>her eru leyndarmál</p>`);
-});
-*/
 
 app.get('/logout', (req, res) => {
   req.logout();
@@ -189,7 +134,7 @@ app.get('/', async (req, res) => {
     errors: [],
     data: {},
   });
-});*/
+}); */
 
 const validation = [
   body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
@@ -207,7 +152,6 @@ const validationResults = async (req, res, next) => {
 
   const result = validationResult(req);
   const events = await listEvents();
-  console.log(events);
   if (!result.isEmpty()) {
     return res.render('admin', {
       title: 'Atburðurinn minn',
@@ -221,7 +165,7 @@ const validationResults = async (req, res, next) => {
 };
 
 const postEvent = async (req, res) => {
-  console.log()
+  console.log('postevent');
   const { name, description } = req.body;
   console.log(req.data);
 
@@ -235,14 +179,29 @@ const postEvent = async (req, res) => {
     title: 'Atburðurinn minn',
     errors: [{ param: '', msg: 'Atburður er nú þegar til' }],
     data: { name, description },
-    events
+    events,
   });
-
 };
 
-app.post('/admin/post', validation, validationResults, sanitazion, postEvent);
+app.post('/admin', validation, validationResults, sanitazion, postEvent);
 
+const postRegistration = async (req, res) => {
+  const { name, comment } = req.body;
+  const eventID = await getEventID(req.params.slug);
 
+  const registration = await createRegistration({ name, comment, eventID });
+  /* if (registration) {
+    return res.redirect('/:slug');
+  }
+
+  return res.render('event', {
+    title: 'Skráningin mín',
+    errors: [{ param: '', msg: 'Gat ekki búið til event' }],
+    data: { name, registration },
+  }); */
+};
+
+app.post('/:slug', validation, validationResults, sanitazion, postRegistration);
 
 app.listen(port, () => {
   console.info(`Server running at http://localhost:${port}/`);

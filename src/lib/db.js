@@ -79,10 +79,12 @@ export async function createEvent({ name, description }) {
 }
 
 export async function updateEvent({ name, description, slug }) {
+  console.log('rejfiowefsult');
+
   const q = `
     UPDATE events
     SET name = $1,
-      slug = $2
+      slug = $2,
       description = $3,
       updated = current_timestamp
     WHERE slug = $4`;
@@ -90,6 +92,8 @@ export async function updateEvent({ name, description, slug }) {
   const values = [name, makeSlug(name), description, slug];
 
   const result = await query(q, values);
+  console.log('result');
+  // console.log(result);
 
   return result !== null;
 }
@@ -133,7 +137,7 @@ export async function listRegistrations() {
 }
 
 export async function chosenEvent(slug) {
-  if (slug==="favicon.ico") return [];
+  if (slug === 'favicon.ico') return [];
   const q = `SELECT * FROM events WHERE slug=$1`;
   const values = [slug];
 

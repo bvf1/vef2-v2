@@ -22,7 +22,12 @@ CREATE TABLE IF NOT EXISTS public.registrations (
   id serial primary key,
   name varchar(64) not null,
   comment text,
-  eventID int REFERENCES events(id),
+  eventID int not null REFERENCES events(id),
   created timestamp with time zone not null default current_timestamp,
   unique (name, eventID)
 );
+
+DROP TABLE IF EXISTS
+   events,
+   registrations
+CASCADE;

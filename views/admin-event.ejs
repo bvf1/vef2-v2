@@ -1,6 +1,6 @@
 <%- include('header') -%>
-<p>|/admin/<%= data.slug %>|</p>
-<form method="post" action="/admin/post" enctype="application/x-www-form-urlencoded" class="form form--separated">
+<h1>Viðburða umsjón</h1>
+<form method="post" action="/admin" enctype="application/x-www-form-urlencoded" class="form form--separated">
 
   <div class="field<%= locals.isInvalid('name', errors) ?  ' field--invalid' : '' %>">
     <label for="name">Nafn*</label>
@@ -25,4 +25,8 @@
 
   <button class="button button--large button--margin">Breyta atburði</button>
 </form>
+<div>
+  <p>Innskráður sem <span>admin</span></p>
+  <a href="/">Útskrá</a>
+</div>
 <%- include('footer') -%>
