@@ -10,22 +10,31 @@ import {
 
 export const indexRouter = express.Router();
 
+/*
 async function indexRoute(req, res) {
+  res.redirect('/events');
+
+}
+
+async function eventRoute(req, res) {
   const events = await listEvents();
+  console.log(events);
 
   res.render('index', {
     title: 'Viðburðasíðan',
     events,
   });
 }
-
 async function slugRoute(req, res) {
+
   const {slug} = req.params;
 
   const event = await chosenEvent(slug);
+  //if (event.length === 0) return res.render('error');
+
   const registrations = await listRegistrations();
-  console.log("slugroute");
-  console.log(req.originalUrl);
+
+
   res.render('event', {
     title: slug,
     errors: [],
@@ -54,13 +63,14 @@ async function slugPostRoute(req, res) {
     title: 'Skráningin mín',
     errors: [{ param: '', msg: 'Gat ekki búið til event' }],
     data: { name, registration },
-  }); */
+  });
   return null;
 }
-
 indexRouter.get('/', catchErrors(indexRoute));
+indexRouter.get('/events', catchErrors(eventRoute));
+*/
 
-indexRouter.get('/:slug', catchErrors(slugRoute));
-indexRouter.post('/:slug/post', catchErrors(slugPostRoute));
+////indexRouter.get('/event/:slug', catchErrors(slugRoute));
+//indexRouter.post('/event:slug/post', catchErrors(slugPostRoute));
 
 // TODO útfæra öll routes

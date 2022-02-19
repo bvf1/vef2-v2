@@ -12,17 +12,18 @@ export function ensureLoggedIn(req, res, next) {
   return res.redirect('/login');
 }
 
-router.get('/',ensureLoggedIn, async (req, res) => {
+router.get('/', async (req, res) => {
   // ensureLoggedIn
   const events = await listEvents();
   res.render('admin', { title: 'admin svæði', events, errors: [], data: {} });
 });
 
+
+
 router.get('/login', (req, res) => {
-  console.log("eror");
 
   if (req.isAuthenticated()) {
-    return res.redirect('/');
+    return res.redirect('/admin');
   }
 
   let message = '';
@@ -35,7 +36,7 @@ router.get('/login', (req, res) => {
   }
 
   return res.send(`
-    <form method="post" action="/login">
+    <form method="post" action="/admin/login">
       <label>Notendanafn: <input type="text" name="username"></label>
       <label>Lykilorð: <input type="password" name="password"></label>
       <button>Innskrá</button>
@@ -48,17 +49,21 @@ router.post(
   '/login',
   passport.authenticate('local', {
     failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/login',
+    failureRedirect: '/admin/login',
   }),
   (req, res) => {
-    console.log(req.originalUrl);
+      console.log(req.originalUrl);
 
-    res.redirect('/admin');
+    res.redirect('/admin/login');
   }
 );
+  /*
 
 router.get('/:slug', async (req, res) => {
+  console.log(req.originalUrl);
+
   const { name, description, slug } = await chosenEvent(req.params.slug);
+  console.log(req.originalUrl);
 
   res.render('admin-event', {
     title: 'admin svæði',
@@ -80,3 +85,4 @@ router.post('/:slug/post', async (req, res) => {
     data: { name, description },
   });
 });
+ */

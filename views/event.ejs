@@ -20,7 +20,7 @@
 <div>
   <h2>Skráðu þig</h2>
 
-  <form method="post" action="/<%=event.slug%>/post" enctype="application/x-www-form-urlencoded" class="form form--separated">
+  <form method="post" action="/event/<%=event.slug%>/post" enctype="application/x-www-form-urlencoded" class="form form--separated">
 
     <div class="field<%= locals.isInvalid('name', errors) ?  ' field--invalid' : '' %>">
       <label for="name">Nafn*</label>

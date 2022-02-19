@@ -134,15 +134,11 @@ export async function listRegistrations() {
 
 export async function chosenEvent(slug) {
   if (slug==="favicon.ico") return [];
-  console.log('jfowe', slug);
   const q = `SELECT * FROM events WHERE slug=$1`;
   const values = [slug];
-  console.log('jfowe', slug);
 
   const result = await query(q, values);
-  console.log('jfowe', slug);
-
-  if (result) {
+  if (result.rowCount > 0) {
     return result.rows[0];
   }
   return [];

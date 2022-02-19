@@ -15,7 +15,7 @@ import { indexRouter } from './routes/index-routes.js';
 
 import { comparePasswords, findByUsername, findById } from './lib/users.js';
 import { router as adminRouter } from './routes/admin-routes.js';
-import { createEvent, createRegistration } from './lib/db.js';
+import { createEvent, createRegistration, listEvents } from './lib/db.js';
 
 dotenv.config();
 const app = express();
@@ -105,7 +105,63 @@ app.use(passport.session());
 
 app.use('/admin', adminRouter);
 
-app.use('/', indexRouter);
+
+//app.use('/', indexRouter);
+
+/*
+function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  return res.redirect('/login');
+}
+
+app.get('/login', (req, res) => {
+
+  if (req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+
+  let message = '';
+
+  // Athugum hvort einhver skilaboð séu til í session, ef svo er
+  //  birtum þau og hreinsum skilaboð
+  if (req.session.messages && req.session.messages.length > 0) {
+    message = req.session.messages.join(', ');
+    req.session.messages = [];
+  }
+
+  return res.send(`
+  <form method="post" action="/login">
+  <label>Notendanafn: <input type="text" name="username"></label>
+  <label>Lykilorð: <input type="password" name="password"></label>
+  <button>Innskrá</button>
+  </form>
+  <p>${message}</p>
+  `);
+});
+
+
+
+app.post(
+  '/login',
+  passport.authenticate('local', {
+    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
+    failureRedirect: '/login',
+  }),
+  (req, res) => {
+
+    res.redirect('/admin');
+  }
+);
+
+
+app.get('/admin', ensureLoggedIn, async (req, res) => {
+  // ensureLoggedIn
+  res.send(`<p>her eru leyndarmál</p>`);
+});
+*/
 
 app.get('/logout', (req, res) => {
   req.logout();
@@ -126,14 +182,14 @@ function isInvalid(field, errors = []) {
 }
 
 app.locals.isInvalid = isInvalid;
-
+/*
 app.get('/', async (req, res) => {
   res.render('event', {
     title: 'Atburðurinn minn',
     errors: [],
     data: {},
   });
-});
+});*/
 
 const validation = [
   body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
@@ -146,15 +202,17 @@ const sanitazion = [
   body('event').customSanitizer((value) => xss(value)),
 ];
 
-const validationResults = (req, res, next) => {
+const validationResults = async (req, res, next) => {
   const { name = '', description = '' } = req.body;
 
   const result = validationResult(req);
-
+  const events = await listEvents();
+  console.log(events);
   if (!result.isEmpty()) {
-    return res.render('event', {
+    return res.render('admin', {
       title: 'Atburðurinn minn',
       errors: result.errors,
+      events,
       data: { name, description },
     });
   }
@@ -163,22 +221,28 @@ const validationResults = (req, res, next) => {
 };
 
 const postEvent = async (req, res) => {
+  console.log()
   const { name, description } = req.body;
+  console.log(req.data);
 
   const created = await createEvent({ name, description });
-
   if (created) {
-    return res.send('<p>Atburður er skráður</p>');
+    return res.redirect('/admin');
   }
 
-  return res.render('event', {
+  const events = await listEvents();
+  return res.render('admin', {
     title: 'Atburðurinn minn',
-    errors: [{ param: '', msg: 'Gat ekki búið til event' }],
+    errors: [{ param: '', msg: 'Atburður er nú þegar til' }],
     data: { name, description },
+    events
   });
+
 };
 
-app.post('/post', validation, validationResults, sanitazion, postEvent);
+app.post('/admin/post', validation, validationResults, sanitazion, postEvent);
+
+
 
 app.listen(port, () => {
   console.info(`Server running at http://localhost:${port}/`);
