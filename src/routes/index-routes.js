@@ -25,6 +25,7 @@ async function indexRoute(req, res) {
   });
 }
 
+/*
 async function slugRoute(req, res) {
   console.log(req.originalUrl);
   const { slug } = req.params;
@@ -44,10 +45,11 @@ async function slugRoute(req, res) {
   });
 }
 
+*/
 indexRouter.get('/', catchErrors(indexRoute));
 //indexRouter.get('/events', catchErrors(eventRoute));
 
-indexRouter.get('/:slug', catchErrors(slugRoute));
+//indexRouter.get('/:slug', catchErrors(slugRoute));
 
 ////indexRouter.get('/event/:slug', catchErrors(slugRoute));
 //indexRouter.post('/event:slug/post', catchErrors(slugPostRoute));

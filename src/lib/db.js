@@ -74,8 +74,12 @@ export async function createEvent({ name, description }) {
   const values = [name, makeSlug(name), description];
 
   const result = await query(q, values);
+  
+  if (result) {
+    return result.rows[0];
+  }
 
-  return result !== null;
+  return [];
 }
 
 export async function updateEvent({ name, description, slug }) {
@@ -92,10 +96,12 @@ export async function updateEvent({ name, description, slug }) {
   const values = [name, makeSlug(name), description, slug];
 
   const result = await query(q, values);
-  console.log('result');
-  // console.log(result);
 
-  return result !== null;
+  if (result) {
+    return result.rows[0];
+  }
+
+  return [];
 }
 
 export async function createRegistration({ name, comment, event }) {

@@ -1,13 +1,12 @@
 {
-  "name": "vef2-2022-v2-synilausn",
+  "name": "vef2-2022-v2-bvf1",
   "version": "1.0.0",
   "description": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "exql": "node ./src/setup.js",
     "dev": "dotenv -e .env -- nodemon ./src/app.js",
-    "start": "dotenv -e .env node ./src/app.js",
+    "start": "dotenv -e .env node ./src/app.js && node ./src/setup.js",
     "setup": "dotenv -e .env node ./src/setup.js",
     "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' dotenv -e .env.test -- jest ./*.test.js",
     "test-watch": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' dotenv -e .env.test -- jest ./*.test.js",

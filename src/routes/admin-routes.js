@@ -34,13 +34,32 @@ router.get('/login', (req, res) => {
   }
 
   return res.send(`
-    <form method="post" action="/admin/login">
-      <label>Notendanafn: <input type="text" name="username"></label>
-      <label>Lykilorð: <input type="password" name="password"></label>
-      <button>Innskrá</button>
-    </form>
-    <p>${message}</p>
-  `);
+  <!doctype html>
+<html lang="is">
+
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body class="flex-container">
+      <h1>Innskráning</h1>
+    <div">
+      <form  class="login method="post" action="/admin/login">
+        <label>Notendanafn: </label> <input type="text" name="username"></input>
+        <label>Lykilorð: </label> <input type="password" name="password"></input>
+        <button>Innskrá</button>
+      </form>
+      <p>${message}</p>
+    </div>
+    <div class="tilbaka">
+      <a href="/">Til Baka</a>
+    </div>
+    </body>
+
+    </html>
+    `);
 });
 
 router.post(

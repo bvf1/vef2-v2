@@ -7,7 +7,7 @@
   <ul>
     <% events.forEach((event) => { %>
       <li>
-        <a href="/<%= event.slug %>"><%= event.name %></a>
+        <b><a href="/<%= event.slug %>"><%= event.name %></a></b>
         <p><%= event.description %></p>
         <a href="/admin/<%= event.slug %>">Uppfæra viðburð</a>
       </li>
@@ -15,7 +15,7 @@
   </ul>
 <% } %>
 <%- include('make-event') -%>
-<div>
+<div class="foot">
   <p>Innskráður sem <span>admin</span></p>
   <a href="/">Útskrá</a>
 </div>

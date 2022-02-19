@@ -45,16 +45,6 @@ app.use(
   })
 );
 
-// Notum SSL tengingu við gagnagrunn ef við erum *ekki* í development
-// mode, á heroku, ekki á local vél
-const ssl = nodeEnv === 'production' ? { rejectUnauthorized: false } : false;
-
-const pool = new pg.Pool({ connectionString, ssl });
-
-pool.on('error', (err) => {
-  console.error('postgres error, exiting...', err);
-  process.exit(-1);
-});
 
 const path = dirname(fileURLToPath(import.meta.url));
 
@@ -167,10 +157,10 @@ const validationResults = async (req, res, next) => {
 const postEvent = async (req, res) => {
   console.log('postevent');
   const { name, description } = req.body;
-  console.log(req.data);
 
   const created = await createEvent({ name, description });
   if (created) {
+    console.log(created);
     return res.redirect('/admin');
   }
 

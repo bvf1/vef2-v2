@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
-import { createSchema, dropSchema, end } from '../lib/db';
+import { createEvent, createSchema, dropSchema, end } from '../lib/db';
 
 /**
  * Hér er test gagnagrunnur búinn til og hent áður en test eru keyrð.
@@ -19,6 +19,11 @@ describe('db', () => {
   });
 
   it('creates a valid event and returns it', async () => {
+    const input = 'a'
+    expect(input).toBe('a');
     // TODO útfæra test
+  /*  expect(createEvent('Forritarahittingur í febrúar',
+      'Forritarar hittast í febrúar og forrita saman eitthvað frábært'))
+      .toBe(`[]`);*/
   });
 });

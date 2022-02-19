@@ -1,20 +1,25 @@
 <%- include('header') -%>
+  <h1><%= title %></h1>
+  <div class="main">
+    <h2>Viðburðir á næstunni</h2>
+    <div>
+      <% if (events.length === 0) { %>
+        <p>Engin event!</p>
+      <% } else { %>
+        <ul>
+          <% events.forEach((event) => { %>
+            <li>
+              <b><a href="/<%= event.slug %>"><%= event.name %></a></b>
+              <p><%= event.description %></p>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
 
-<h1><%= title %></h1>
-<% if (events.length === 0) { %>
-  <p>Engin event!</p>
-<% } else { %>
-  <ul>
-    <% events.forEach((event) => { %>
-      <li>
-        <a href="/<%= event.slug %>"><%= event.name %></a>
-        <p><%= event.description %></p>
-      </li>
-    <% }) %>
-  </ul>
-<% } %>
-<div>
-  <a href="/admin/login">Innskráining stjórnanda</a>
-</div>
+  </div>
+  <div class="foot">
+    <a href="/admin/login">Innskráining stjórnanda</a>
+  </div>
 
 <%- include('footer') -%>

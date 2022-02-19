@@ -1,33 +1,20 @@
-import { query } from 'express';
+import { createEvent, createSchema, dropSchema } from "./lib/db.js";
 
 async function create() {
-  console.log('object');
-  const q = `
-    UPDATE events
-    SET name = $1,
-      slug = $1,
-      description = $2,
-    WHERE slug = $3`;
-  const values = ['as', 'asasssa', 'asdf'];
+  // TODO setja upp gagnagrun + gögn
+  await dropSchema();
+  await createSchema();
 
-  const result = await query(q, values);
-  console.log(result);
+  await createEvent({name: 'Forritarahittingur í februar',
+  description: 'Forritarar hittast í febrúar og forrita saman eitthvað frábært.'});
 
-  // return result !== null;
+  await createEvent({name: 'Hönnunarhittingur í mars',
+  description: 'Spennandi hittingur hönnuða í Hönnunarmars'});
 
-  let a = `
-  UPDATE events
-  SET name = 'bb',
-    slug = 'bb',
-    description = 'asasas'
-  WHERE slug = 'as';
+  await createEvent({name: 'Verkstjórahittingur í apríl',
+  description: 'Virkilega vel verkefnastýriður hittingur'});
 
 
-   ``
-
-  select name from events;
-
-  `;
 }
 
 create().catch((err) => {
