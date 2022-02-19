@@ -3,15 +3,15 @@
   <h1><%= event.name %></h1>
   <p><%= event.description%></p>
 </div>
-<div>
+<div class="main">
   <h2>Skráningar á viðburð</h2>
   <% if (registrations.length === 0) { %>
     <p>Enginn hefur skráð sig á þennan viðburð</p>
     <% } else { %>
     <ul>
       <% registrations.forEach((registration) => { %>
-      <li>
-        <p><%= registration.name %></p>
+      <li class="sec">
+        <b><p><%= registration.name %></p></b>
         <p><%= registration.comment %></p></li>
       <% }) %>
     </ul>

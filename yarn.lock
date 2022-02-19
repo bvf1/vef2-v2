@@ -1895,7 +1895,7 @@ expect@^27.5.1:
 
 express-session@^1.17.2:
   version "1.17.2"
-  resolved "https://registry.npmjs.org/express-session/-/express-session-1.17.2.tgz"
+  resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.17.2.tgz#397020374f9bf7997f891b85ea338767b30d0efd"
   integrity sha512-mPcYcLA0lvh7D4Oqr5aNJFMtBMKPLl++OKKxkHzZ0U0oDq1rpKBnkR5f5vCHR26VeArlTOEF9td4x5IjICksRQ==
   dependencies:
     cookie "0.4.1"

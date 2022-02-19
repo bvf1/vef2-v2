@@ -1,6 +1,9 @@
 import latinize from 'latinize';
 
 export function makeSlug(name) {
-  name.replace(' ', '-');
-  return latinize(name);
+  let n = name;
+  while (n.includes(' ')) {
+    n = n.replace(' ', '-');
+}
+  return latinize(n);
 }

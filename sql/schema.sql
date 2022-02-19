@@ -26,3 +26,4 @@ CREATE TABLE IF NOT EXISTS public.registrations (
   created timestamp with time zone not null default current_timestamp,
   unique (name, eventID)
 );
+

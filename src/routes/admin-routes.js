@@ -1,25 +1,71 @@
 import express from 'express';
+import { body, validationResult } from 'express-validator';
 import passport from 'passport';
-import { listEvents, chosenEvent, updateEvent } from '../lib/db.js';
+import xss from 'xss';
+import { catchErrors } from '../lib/catch-errors.js';
+import { listEvents, chosenEvent, updateEvent, createEvent } from '../lib/db.js';
+import { ensureLoggedIn } from '../login.js';
 
 export const router = express.Router();
 
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    console.log('next');
-    return next();
-  }
-  console.log('redirect  in /admin');
-  return res.redirect('/admin/login');
-}
 
-router.get('/', ensureLoggedIn, async (req, res) => {
-  // ensureLoggedIn
+async function index(req, res) {
   const events = await listEvents();
   res.render('admin', { title: 'admin svæði', events, errors: [], data: {} });
-});
+};
 
-router.get('/login', (req, res) => {
+
+
+async function slugRoute (req, res) {
+  const { name, description } = await chosenEvent(req.params.slug);
+  console.log({ name, description });
+  res.render('admin-event', {
+    title: 'admin svæði',
+    errors: [],
+    data: { name, description },
+  });
+};
+
+
+
+async function slugRoutePost (req, res) {
+  //this works here change the other way
+  const { name, description } = req.body;
+
+  const event = await updateEvent({ name, description, });
+  if (event) {
+    return res.redirect('/');
+  }
+
+  return res.render('admin-event', {
+    title: 'Atburðurinn minn',
+    errors: [{ param: '', msg: 'Gat ekki búið til event' }],
+    data: { name, description},
+  });
+};
+
+
+
+
+async function postEvent (req, res)  {
+  console.log('postevent');
+  const { name, description } = req.body;
+
+  const created = await createEvent({ name, description });
+  if (created) {
+    console.log(created);
+   // return res.send('<p>Atburður er skráður</p>');
+    return res.redirect('/admin');
+  }
+  const events = await listEvents();
+  return res.render('admin', {
+    title: 'Atburðurinn minn',
+    errors: [{ param: '', msg: 'Atburður er nú þegar til' }],
+    data: { name, description },
+    events,
+  });
+}
+function login(req, res) {
   if (req.isAuthenticated()) {
     return res.redirect('/admin');
   }
@@ -33,34 +79,13 @@ router.get('/login', (req, res) => {
     req.session.messages = [];
   }
 
-  return res.send(`
-  <!doctype html>
-<html lang="is">
+  return res.render('login', {message, title: 'Innskráning' });
+};
 
-<head>
-  <meta charset="utf-8">
-  <title>Login</title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
 
-<body class="flex-container">
-      <h1>Innskráning</h1>
-    <div">
-      <form  class="login method="post" action="/admin/login">
-        <label>Notendanafn: </label> <input type="text" name="username"></input>
-        <label>Lykilorð: </label> <input type="password" name="password"></input>
-        <button>Innskrá</button>
-      </form>
-      <p>${message}</p>
-    </div>
-    <div class="tilbaka">
-      <a href="/">Til Baka</a>
-    </div>
-    </body>
 
-    </html>
-    `);
-});
+//ensureLoggedIn
+
 
 router.post(
   '/login',
@@ -69,34 +94,64 @@ router.post(
     failureRedirect: '/admin/login',
   }),
   (req, res) => {
-    res.redirect('/admin/login');
+    res.redirect('/admin');
   }
 );
 
-router.get('/:slug', async (req, res) => {
-  const { name, description } = await chosenEvent(req.params.slug);
-  res.render('admin-event', {
-    title: 'admin svæði',
-    errors: [],
-    data: { name, description },
-  });
+router.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
 });
 
-router.post('/:slug', async (req, res) => {
-  const { name, description } = req.body;
-  const slug = req.params.slug;
-  console.log(object);
-  console.log(name); /*
- // const event = await updateEvent({ name, description, slug });
-  if (event) {
-    return res.redirect('/');
+
+const validationMiddleware = [
+  body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
+  body('name').not().equals('admin').withMessage('Nafn má ekki admin'),
+  body('name').not().equals('Admin').withMessage('Nafn má ekki Admin'),
+
+];
+
+
+const xssSanitizationMiddleware = [
+  body('name').customSanitizer((value) => xss(value)),
+  body('event').customSanitizer((value) => xss(value)),
+]
+
+const sanitizationMiddleware = [
+  body('name').trim().escape(),
+  body('event').trim().escape(),
+];
+
+async function validationCheck(req, res, next) {
+
+  const { name = '', description = '' } = req.body;
+
+  const validation = validationResult(req);
+  const events = await listEvents();
+  if (!validation.isEmpty()) {
+    return res.render('', {
+      title: 'Atburðurinn minn',
+      errors: validation.errors,
+      events,
+      data: { name, description },
+    });
   }
+  return next();
+}
 
-  return res.render('/admin-event', {
-    title: 'Atburðurinn minn',
-    errors: [{ param: '', msg: 'Gat ekki búið til event' }],
-    data: { name, description},
-  });*/
-});
 
-//console.log(req.originalUrl);
+router.get('/', catchErrors(index));
+router.post('/', catchErrors(postEvent));
+
+
+router.get('/login', login);
+router.get('/:slug', catchErrors(slugRoute));
+router.post('/:slug', catchErrors(slugRoutePost))
+router.post(
+  '/',
+  validationMiddleware,
+  xssSanitizationMiddleware,
+  catchErrors(validationCheck),
+  sanitizationMiddleware,
+  catchErrors(postEvent),
+);

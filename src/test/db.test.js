@@ -19,10 +19,10 @@ describe('db', () => {
   });
 
   it('creates a valid event and returns it', async () => {
-    const input = 'a'
+    const input = 'a';
     expect(input).toBe('a');
     // TODO útfæra test
-  /*  expect(createEvent('Forritarahittingur í febrúar',
+    /*  expect(createEvent('Forritarahittingur í febrúar',
       'Forritarar hittast í febrúar og forrita saman eitthvað frábært'))
       .toBe(`[]`);*/
   });

@@ -74,7 +74,7 @@ export async function createEvent({ name, description }) {
   const values = [name, makeSlug(name), description];
 
   const result = await query(q, values);
-  
+
   if (result) {
     return result.rows[0];
   }
@@ -104,14 +104,16 @@ export async function updateEvent({ name, description, slug }) {
   return [];
 }
 
-export async function createRegistration({ name, comment, event }) {
+export async function createRegistration({ name, comment, eventID }) {
+  console.log('db createReg,event', name, eventID);
+  console.log('jfoiwjgiorwgirjoigiw');
   const q = `
     INSERT INTO
       registrations(name, comment, eventID)
     VALUES
       ($1, $2, $3)
     RETURNING *`;
-  const values = [name, comment, event];
+  const values = [name, comment, eventID];
 
   const result = await query(q, values);
 

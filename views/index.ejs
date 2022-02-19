@@ -9,7 +9,7 @@
         <ul>
           <% events.forEach((event) => { %>
             <li>
-              <b><a href="/<%= event.slug %>"><%= event.name %></a></b>
+              <b><a href="/event/<%= event.slug %>"><%= event.name %></a></b>
               <p><%= event.description %></p>
             </li>
           <% }) %>
@@ -19,7 +19,7 @@
 
   </div>
   <div class="foot">
-    <a href="/admin/login">Innskráining stjórnanda</a>
+    <a href="/admin/login">Innskránining stjórnanda</a>
   </div>
 
 <%- include('footer') -%>

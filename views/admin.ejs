@@ -1,19 +1,22 @@
 <%- include('header') -%>
 <h1>Viðburða umsjón</h1>
 <h2>Viðburðir á næstunni</h2>
-<% if (events.length === 0) { %>
-  <p>Engin event!</p>
-<% } else { %>
-  <ul>
-    <% events.forEach((event) => { %>
-      <li>
-        <b><a href="/<%= event.slug %>"><%= event.name %></a></b>
-        <p><%= event.description %></p>
-        <a href="/admin/<%= event.slug %>">Uppfæra viðburð</a>
-      </li>
-    <% }) %>
-  </ul>
-<% } %>
+<div class="main">
+  <% if (events.length === 0) { %>
+    <p>Engin event!</p>
+  <% } else { %>
+    <ul>
+      <% events.forEach((event) => { %>
+        <li>
+          <b><a href="/<%= event.slug %>"><%= event.name %></a></b>
+          <p><%= event.description %></p>
+          <a href="/admin/<%= event.slug %>">Uppfæra viðburð</a>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
+
 <%- include('make-event') -%>
 <div class="foot">
   <p>Innskráður sem <span>admin</span></p>
