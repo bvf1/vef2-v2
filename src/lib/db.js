@@ -83,8 +83,6 @@ export async function createEvent({ name, description }) {
 }
 
 export async function updateEvent({ name, description, slug }) {
-  console.log('rejfiowefsult');
-
   const q = `
     UPDATE events
     SET name = $1,
@@ -105,8 +103,6 @@ export async function updateEvent({ name, description, slug }) {
 }
 
 export async function createRegistration({ name, comment, eventID }) {
-  console.log('db createReg,event', name, eventID);
-  console.log('jfoiwjgiorwgirjoigiw');
   const q = `
     INSERT INTO
       registrations(name, comment, eventID)
@@ -146,7 +142,7 @@ export async function listRegistrations() {
 
 export async function chosenEvent(slug) {
   if (slug === 'favicon.ico') return [];
-  const q = `SELECT * FROM events WHERE slug=$1`;
+  const q = 'SELECT * FROM events WHERE slug=$1';
   const values = [slug];
 
   const result = await query(q, values);
@@ -157,7 +153,7 @@ export async function chosenEvent(slug) {
 }
 
 export async function getEventID(slug) {
-  const q = `SELECT id FROM events WHERE slug=$1`;
+  const q = 'SELECT id FROM events WHERE slug=$1';
   const values = [slug];
 
   const result = await query(q, values);

@@ -1,4 +1,6 @@
-/*import { describe, expect, it } from '@jest/globals';
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
+import { describe, expect, it } from '@jest/globals';
 import { validationResult } from 'express-validator';
 import {
   registrationValidationMiddleware,
@@ -26,8 +28,10 @@ describe('registration', () => {
     };
 
     const registrationValidationMiddleware = [
-      req.body('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
-
+      req
+        .body('name')
+        .isLength({ min: 1 })
+        .withMessage('Nafn má ekki vera tómt'),
     ]; // TODO Sækja á réttan stað
 
     await applyAllMiddlewares(req);
@@ -51,9 +55,6 @@ describe('registration', () => {
     expect(req.body.name).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
   });
 });
-*/
-
-import { describe, expect, it } from '@jest/globals';
 
 describe('build', () => {
   it('reads files from folder', () => {
