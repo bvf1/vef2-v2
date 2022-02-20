@@ -5,7 +5,6 @@ import passport from 'passport';
 import { format } from 'date-fns';
 
 import { dirname, join } from 'path';
-import pg from 'pg';
 import { fileURLToPath } from 'url';
 import { isInvalid } from './lib/template-helpers.js';
 
@@ -14,18 +13,20 @@ import { router as adminRoute } from './routes/admin-routes.js';
 
 dotenv.config();
 
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+
 const {
   PORT: port = 3000,
-  DATABASE_URL: connectionString,
-  SESSION_SECRET: sessionSecret = 'jfoiwjfojwejfowg',
+  SESSION_SECRET: sessionSecret = 'alæskdjfæalskdjfælaksjdf',
   DATABASE_URL: databaseUrl,
-  NODE_ENV: nodeEnv = 'developement',
 } = process.env;
 
-const app = express();
 
-// Sér um að req.body innihaldi gögn úr formi
-app.use(express.urlencoded({ extended: true }));
+if (!sessionSecret || !databaseUrl) {
+  console.error('Vantar .env gildi');
+  process.exit(1);
+}
 
 const path = dirname(fileURLToPath(import.meta.url));
 
