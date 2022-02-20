@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
-import { format } from 'date-fns';
 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -49,17 +48,6 @@ app.use(passport.session());
 
 app.locals.isInvalid = isInvalid;
 
-app.locals.formatDate = (str) => {
-  let date = '';
-
-  try {
-    date = format(str || '', 'dd.MM.yyyy');
-  } catch {
-    return '';
-  }
-
-  return date;
-};
 
 app.use('/admin', adminRoute);
 app.use('/', registrationRouter);
