@@ -17,6 +17,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 const {
+  HOST: hostname = '127.0.0.1',
   PORT: port = 3000,
   SESSION_SECRET: sessionSecret = 'alæskdjfæalskdjfælaksjdf',
   DATABASE_URL: databaseUrl,
@@ -95,5 +96,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.info(`Server running at http://localhost:${port}/`);
+  console.info(`Server running at http:${hostname}:${port}/`);
 });
