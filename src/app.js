@@ -96,5 +96,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.info(`Server running at http:${hostname}:${port}/`);
+  console.info(`Server running at http://${hostname}:${port}/`);
 });
